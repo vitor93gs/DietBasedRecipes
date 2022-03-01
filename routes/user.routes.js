@@ -15,13 +15,33 @@ router.post("/signup", async (req,res) => {
             })
         }
         const salt = await bcrypt.genSalt(saltRounds)
-        console.log("passei no if")
         const hashedPassword = await bcrypt.hash(password, salt)
         const createdUser = await UserModel.create({
             ...req.body,
             passwordHash: hashedPassword
         })
         return res.status(201).json(createdUser)
+    } catch (error) {
+        console.error(error)
+        return res.status(500).json(error)
+    }
+})
+
+router.post("/login", async (req,res) => {
+    try {
+        const {email,password} = req.body
+        const user = await UserModel.findOne({email:email})
+        if(!user){
+            return res.status(400).json({msg: "wrong password or e-mail"})
+        }
+        if(await bcrypt.compare(password, user.passwordHash)){
+            delete user._doc.passwordHash
+            const token = generateToken(user)
+            return res.status(200).json({user:{...user._doc},token:token})
+        }
+        else{
+            return res.status(401).json(error)
+        }
     } catch (error) {
         console.error(error)
         return res.status(500).json(error)
