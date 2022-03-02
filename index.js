@@ -12,6 +12,9 @@ const API_VERSION = "v1"
 const userRouter = require("./routes/user.routes")
 app.use(`/${API_VERSION}/users`, userRouter)
 
+const recipeRouter = require("./routes/recipe.routes")
+app.use(`/${API_VERSION}/recipes`, recipeRouter)
+
 
 app.listen(Number(process.env.PORT), () => {
     console.log("Server UP! PORT: ", process.env.PORT)
