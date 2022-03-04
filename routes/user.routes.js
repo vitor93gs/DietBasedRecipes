@@ -1,6 +1,5 @@
 const router = require("express").Router()
 const bcrypt = require("bcrypt")
-const { route } = require("express/lib/router")
 
 const generateToken = require("../config/jwt.config")
 const UserModel = require("../models/User.model")
@@ -24,7 +23,9 @@ router.post("/signup", async (req,res) => {
             ...req.body,
             passwordHash: hashedPassword
         })
-        return res.status(201).json(createdUser)
+        const response = createdUser
+        response.passwordHash = ""
+        return res.status(201).json(response)
     } catch (error) {
         console.error(error)
         return res.status(500).json(error)
@@ -44,7 +45,7 @@ router.post("/login", async (req,res) => {
             return res.status(200).json({user:{...user._doc},token:token})
         }
         else{
-            return res.status(401).json(error)
+            return res.status(400).json({msg:"Wrong password or e-mail"})
         }
     } catch (error) {
         console.error(error)
