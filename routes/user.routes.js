@@ -56,11 +56,14 @@ router.post("/login", async (req,res) => {
 router.get("/profile", isAuthenticated,attachCurrentUser,  async (req,res) =>{
     try {
         const loggedInUser = await req.currentUser
+        const id = await loggedInUser._id
+        const populatedUser = await UserModel.findOne({_id:id}).populate("favoriteRecipes")
+        populatedUser.passwordHash =""
         if(!(await checkDisabled(UserModel,loggedInUser))){
             return res.status(400).json({msg: "Current user is disabled"})
         }
         if(loggedInUser){
-            return res.status(200).json(loggedInUser)
+            return res.status(200).json(populatedUser)
         }
         else{
             return res.status(404).json({msg: "User not found"})

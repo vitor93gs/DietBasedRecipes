@@ -5,7 +5,7 @@ const userSchema = new Schema ({
     email:{type: String, required: true, trim: true, unique: true, match:/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/},
     name:{ type: String, trim: true, required: true},
     passwordHash:{type: String, required: true},
-    favoriteRecipes: [{type:mongoose.Types.ObjectId, ref: "Recipe"}],
+    favoriteRecipes: [{type:mongoose.Types.ObjectId, ref: "Recipe", unique:true}],
     isDisabled:{type:Boolean, required:true,default:false},
     disabledWhen:{type:Date}
 })

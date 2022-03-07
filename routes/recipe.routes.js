@@ -27,6 +27,27 @@ router.patch("/makeFavorite/:id", isAuthenticated , attachCurrentUser, async (re
     }
 })
 
+router.patch("/deleteFavorite/:id", isAuthenticated , attachCurrentUser, async (req,res) => {
+    try {
+        const user = await req.currentUser
+        if(!(await checkDisabled(UserModel,user))){
+            return res.status(400).json({msg: "Current user is disabled"})
+        }
+        const id = req.params.id
+        const updatedUser = await UserModel.findOneAndUpdate(
+            { _id : user._id },
+            {$pull: {favoriteRecipes: id}},
+            {new:true, runValidators:true}
+            ).populate("favoriteRecipes")
+        return res.status(200).json(updatedUser)
+        
+    } catch (error) {
+        console.error(error)
+        return res.status(500).json(error)
+    }
+})
+
+
 router.post("/newRecipe", async (req,res) => {
     try {
         const newRecipe = await Recipemodel.create({
