@@ -2,7 +2,7 @@ const mongoose = require("mongoose")
 const { Schema , model } = require("mongoose")
 
 const recipeSchema = new Schema ({
-    name: {type: String, unique:true},
+    name: {type: String},
     ingredients: {type: Array},
     instructions: {type: String},
 })
