@@ -7,7 +7,7 @@ const cors = require("cors")
 app.use(express.json())
 app.use(cors({ origin: process.env.REACT_APP_URL }))
 
-// app.use(cors({ origin: process.env.REACT_APP_URL }))
+
 const API_VERSION = "v1"
 
 const userRouter = require("./routes/user.routes")
