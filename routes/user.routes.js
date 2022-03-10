@@ -77,10 +77,22 @@ router.get("/profile", isAuthenticated,attachCurrentUser,  async (req,res) =>{
 router.patch("/profile/update", isAuthenticated, attachCurrentUser, async(req,res) => {
     try {
         const user = req.currentUser
+        const {password} = req.body
+        if(!password || !password.match(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/)){
+            return res.status(400).json({
+                msg: "Password is required and must have at least 6 characters, at least one letter and one number."
+            })
+        }
+        const salt = await bcrypt.genSalt(saltRounds)
+        const hashedPassword = await bcrypt.hash(password, salt)
         if(!(await checkDisabled(UserModel,user))){
             return res.status(400).json({msg: "Current user is disabled"})
         }
-        const updatedUser = await UserModel.findOneAndUpdate({ _id : user._id },{ ...req.body }, { new: true, runValidators: true })
+        const updatedUser = await UserModel.findOneAndUpdate({ _id : user._id },{
+            ...req.body,
+            passwordHash: hashedPassword
+            }, { new: true, runValidators: true }
+        )
         var show = updatedUser
         delete show._doc.passwordHash
         return res.status(200).json(show)
